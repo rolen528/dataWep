@@ -11,5 +11,22 @@ spring:
   h2:
     console:
       enabled: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: '  '
+            client-secret: '  '
+            redirect-uri: "https://www.mycom24data.p-e.kr/login/oauth2/code/google"
+            scope:
+              - email
+              - profile
+  servlet:
+    session:
+      persistent: true
+
 server:
   port: 8081
+
+

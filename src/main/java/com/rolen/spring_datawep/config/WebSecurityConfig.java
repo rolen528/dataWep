@@ -34,19 +34,26 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .authorizeHttpRequests( auth -> auth  // 인증 인가 설정
-                .requestMatchers("/login", "/signup", "/user").permitAll()
-                .anyRequest().authenticated()
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")        // 로그인 페이지는 동일하게
+                        .defaultSuccessUrl("/articles", true)  // 로그인 후 이동 경로
                 )
-                .formLogin( formLogin -> formLogin   // 폼 기반 로그인 설정
-                .loginPage("/login")
-                .defaultSuccessUrl("/articles")
+                .authorizeHttpRequests(auth -> auth  // 인증 인가 설정
+                        .requestMatchers("/login", "/signup", "/user", "/oauth2/**").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .logout( logout -> logout   //로그아웃 설정
-                .logoutSuccessUrl("/login")
-                .invalidateHttpSession(true)
+                .formLogin(formLogin -> formLogin   // 폼 기반 로그인 설정
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/articles", true)
                 )
-                .csrf(AbstractHttpConfigurer::disable) //csrf 비활성화
+                .logout(logout -> logout   // 로그아웃 설정
+                        .logoutSuccessUrl("/login")
+                        .invalidateHttpSession(true)
+                )
+                .sessionManagement(session -> session
+                        .sessionFixation().migrateSession()  // 또는 newSession()
+                )
+                .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .build();
     }
 
